@@ -1,16 +1,13 @@
 import express from 'express';
 import parser from 'body-parser';
-import routes from './routes.js';
-
+import apiRoutes from './routes/api';
 
 const app = new express();
-
 
 app.use(parser.urlencoded({
     extended: false
 }))
-
-app.use(routes);
+app.use('/api', apiRoutes);
 
 
 
