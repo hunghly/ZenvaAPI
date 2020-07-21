@@ -10,13 +10,29 @@ router.get('/', (req, res, next) => {
     })
 })
 
+router.post('/password', (req, res) => {
+    const {username, password} = req.body;
+    if (!username || !password) {
+        return res.status(400).send({err: `Required Fields are not found: ${(!username) ? 'username' : ''} ${(!password) ? 'password' : ''}`});
+    }
+    User.findOne({username: username }, function(err, userModel) {
+        if (err) return res.status(400).send(err);
+        if (!User) return res.status(400).send({err: 'Cannot find user'});
+        return userModel.comparePassword(password, function(err, isMatch) {
+            if (err) return res.status(400).send(err);
+            return res.send({correct: isMatch});
+        })
+    });
+})
+
 router.post('/', (req, res, next) => {
-    const {username} = req.body;
-    if (!username) {
-        return res.status(400).send({err: 'Required Fields are not found: username'});
+    const {username, password} = req.body;
+    if (!username || !password) {
+        return res.status(400).send({err: `Required Fields are not found: ${(!username) ? 'username' : ''} ${(!password) ? 'password' : ''}`});
     }
     const newUser = new User({
-        username: username
+        username: username,
+        password: password
     })
     return newUser.save(function(err, model) {
         if (err) {
